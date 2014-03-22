@@ -1,0 +1,105 @@
+<html>
+  <head>
+	<script type="text/javascript" 
+		src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart','timeline','Gauge','calendar']}]}">
+	</script>
+
+    <script type="text/javascript">
+    {JSONDATA}
+    </script>
+    <script type="text/javascript">
+	google.setOnLoadCallback(drawVisualization);
+	var bubbleChart,dataTable;
+	function drawVisualization() {
+		for(index in DATA) {
+			var chartData = DATA[index];
+			var containerId = chartData["containerId"];
+			//var div = document.createElement("div");
+			//div.setAttribute("id", containerId);
+			//document.getElementsByTagName("body")[0].appendChild(div);
+			if (chartData["chartType"] == "Timeline") {
+				var data = google.visualization.arrayToDataTable(chartData["dataTable"]);
+				var chart = new google.visualization.Timeline();
+				chart.draw(data,containerId);
+			} else if(chartData["chartType"] == "Gauge") {
+				var data = google.visualization.arrayToDataTable(chartData["dataTable"]);
+				var chart = new google.visualization.Gauge();
+			} else if(chartData["chartType"] == "Calendar") {
+				var data = google.visualization.arrayToDataTable(chartData["dataTable"]);
+				var chart = new google.visualization.Calendar(document.getElementById(containerId));
+				chart.draw(data,chartData["options"]);
+			} else if(chartData["chartType"] == "BubbleChart") {
+				dataTable = new google.visualization.arrayToDataTable(chartData["dataTable"]);
+				bubbleChart = new google.visualization.BubbleChart(document.getElementById(containerId));
+				bubbleChart.draw(dataTable,chartData["options"]);
+				google.visualization.events.addListener(bubbleChart, 'select', bubbleEventHandler);
+
+			} else {
+				var wrapper = new google.visualization.ChartWrapper(chartData);
+				wrapper.draw();
+			}
+		}
+	}
+	function bubbleEventHandler(e) {
+		var select = bubbleChart.getSelection();
+		var row = select[0]["row"];
+		var url = dataTable.getValue(row,0);
+  		window.open(url);
+	}
+  </script>
+  <style type="text/css">
+  	.title, .head, .subhead, .body, .foot {
+   		 margin: auto;
+    		 padding: 10px 40px;
+    		 width: 1000px;
+	}
+	.title {
+   	 	background: none repeat scroll 0 0 #EEEEEE;
+    		font-size: 18px;
+    		font-weight: bold;
+	}
+	.title a {
+    		color: #000000;
+	}
+	.subtitle {
+    		color: #666666;
+    		float: right;
+    		font-variant: small-caps;
+    		font-weight: normal;
+    		text-transform: lowercase;
+	}
+	body {
+    		background-color: #EEEEEE;
+    		margin: 0;
+	}
+	.body {
+    		background: none repeat scroll 0 0 #FFFFFF;
+    		border-bottom: 1px solid #AAAAAA;
+    		border-right: 1px solid #AAAAAA;
+    		padding-bottom: 40px;
+	}
+	.button {
+   		 background-color: #FFFFBB;
+    		border-bottom: 1px solid #DDDDAA;
+    		border-right: 1px solid #DDDDAA;
+    		color: #000000;
+    		display: block;
+    		font-size: 16px;
+    		font-weight: bold;
+    		padding: 10px;
+		margin: auto;
+	}
+  </style>
+  </head>
+  <body>
+  <div class="title">
+      <div class="subtitle">
+        A graphical toolkit for visualization Test Result
+      </div>
+      <a>Statistic</a>
+  </div>
+  <div class="body">
+  {CONTAINER}
+  </div>
+  </body>
+</html>
